@@ -28,6 +28,8 @@ class QuizPage extends StatefulWidget {
 }
 
 class _QuizPageState extends State<QuizPage> {
+  List<Widget> scoreKeeper = [];
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -90,14 +92,33 @@ class _QuizPageState extends State<QuizPage> {
             ),
           ),
         ),
-        //TODO: Add a Row here as your score keeper
+        Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: scoreKeeper,
+        ),
       ],
     );
   }
 
   void checkAnswer(bool answer) {
-    quizBrain.getCorrectAnswer() == answer
-        ? print('Right answer!')
-        : print('Wrong answer!');
+    setState(() {
+      quizBrain.getCorrectAnswer() == answer
+          ? scoreKeeper.add(Icon(
+              Icons.check,
+              color: Colors.green,
+            ))
+          : scoreKeeper.add(Icon(
+              Icons.close,
+              color: Colors.red,
+            ));
+
+      if (quizBrain.isFinished()) {
+        print('Finished!');
+        quizBrain.reset();
+        scoreKeeper.removeWhere((element) => true);
+      }
+
+      quizBrain.nextQuestion();
+    });
   }
 }
